@@ -23,7 +23,7 @@ function spotifyAnalysis() {
     // A promise that must end up providing an access code
     var accessTokenPromise;
 
-    if (spotifyApi.getAccessToken()) {
+    if (!spotifyApi.getAccessToken() && !spotifyApi.getRefreshToken()) {
         if (!config.code || !spotifyApi.getAccessToken()) {
             // No access code stored in config? Prompt the user!
             accessTokenPromise = new Promise(function (resolve, reject) {
@@ -71,7 +71,7 @@ function spotifyAnalysis() {
     return accessTokenPromise.then(function (data) {
         spotifyApi.setAccessToken(data.body.access_token);
         spotifyApi.setRefreshToken(data.body.refresh_token);
-            
+        
         return spotifyApi.getMySavedTracks();
     }, function (error) {
         console.log("Could not get access tokens from access code. " + error);

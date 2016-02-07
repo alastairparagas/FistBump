@@ -81,7 +81,7 @@ function myoDevice(preliminaryMusicInfo) {
         
         if (gyroIntensityScore >= 700 && musicTree.strong.length > 0) {
             return "strong";
-        } else if (gyroIntensityScore >= 50 && musicTree.medium.length > 0) {
+        } else if (gyroIntensityScore >= 100 && musicTree.medium.length > 0) {
             return "medium";
         }
         
