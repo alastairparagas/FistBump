@@ -6,20 +6,19 @@ var spotifyWebApiNode = require('spotify-web-api-node'),
     
     config = require('./config');
 
+// Initialize Spotify JS Client API
+var spotifyApi = new spotifyWebApiNode({
+    clientId: config.Spotify.clientId,
+    clientSecret: config.Spotify.clientSecret,
+    redirectUri: config.Spotify.redirectUri
+});
+
 
 /**
 * Picks up a person's Spotify list of music and does Echonest analysis
 * @return Promise object
 */
 function spotifyAnalysis() {
-    
-    // Initialize Spotify JS Client API
-    var spotifyApi = new spotifyWebApiNode({
-        clientId: config.Spotify.clientId,
-        clientSecret: config.Spotify.clientSecret,
-        redirectUri: config.Spotify.redirectUri
-    });
-
 
     // A promise that must end up providing an access code
     var accessTokenPromise;
