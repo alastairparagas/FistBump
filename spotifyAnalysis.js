@@ -23,52 +23,55 @@ function spotifyAnalysis() {
     // A promise that must end up providing an access code
     var accessTokenPromise;
 
-    if (!config.code || !spotifyApi.getAccessToken()) {
-        // No access code stored in config? Prompt the user!
-        accessTokenPromise = new Promise(function (resolve, reject) {
-            var authorizationUrl = spotifyApi.createAuthorizeURL([
-                'playlist-read-private', 
-                'streaming', 
-                'user-read-private', 
-                'user-read-email',
-                'user-library-read',
-                'user-follow-read'
-            ]);
-            console.log("Get the access code from: " + authorizationUrl);
+    if (spotifyApi.getAccessToken()) {
+        if (!config.code || !spotifyApi.getAccessToken()) {
+            // No access code stored in config? Prompt the user!
+            accessTokenPromise = new Promise(function (resolve, reject) {
+                var authorizationUrl = spotifyApi.createAuthorizeURL([
+                    'playlist-read-private', 
+                    'streaming', 
+                    'user-read-private', 
+                    'user-read-email',
+                    'user-library-read',
+                    'user-follow-read'
+                ]);
+                console.log("Get the access code from: " + authorizationUrl);
 
-            prompt.start();
-            prompt.get(['accessCode'], function (err, result) {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(result.accessCode);
+                prompt.start();
+                prompt.get(['accessCode'], function (err, result) {
+                    if (err) {
+                        return reject(err);
+                    }
+                    resolve(result.accessCode);
+                });
             });
-        });
-    } else {
-        // Access code in config? Use it!
-        accessTokenPromise = new Promise(function (resolve, reject) {
-            resolve(config.code);
+        } else if (config.code) {
+            // Access code in config? Use it!
+            accessTokenPromise = new Promise(function (resolve, reject) {
+                resolve(config.code);
+            });
+        }
+
+        // Obtain current user's access and refresh token
+        accessTokenPromise = accessTokenPromise.then(function (accessCode) {
+            return spotifyApi.authorizationCodeGrant(accessCode);
+        }, function (error) {
+            console.log("Could not get access code from prompt. " + error);
+        })
+
+        // Obtain current user's Spotify Playlist
+        .then(function (data) {
+            spotifyApi.setAccessToken(data.body.access_token);
+            spotifyApi.setRefreshToken(data.body.refresh_token);
+        }, function (error) {
+            console.log("Could not get access tokens from access code. " + error);
         });
     }
-
-    // Obtain current user's access and refresh token
-    return accessTokenPromise.then(function (accessCode) {
-        return spotifyApi.authorizationCodeGrant(accessCode);
-    }, function (error) {
-        console.log("Could not get access code from prompt. " + error);
-    })
-
-    // Obtain current user's Spotify Playlist
-    .then(function (data) {
-        spotifyApi.setAccessToken(data.body.access_token);
-        spotifyApi.setRefreshToken(data.body.refresh_token);
-
-        return spotifyApi.getMySavedTracks();
-    }, function (error) {
-        console.log("Could not get access tokens from access code. " + error);
-    })
     
     // Do Echonest Music Analysis on Spotify Playlist
+    return accessTokenPromise.then(function () {
+        return spotifyApi.getMySavedTracks();
+    })
     .then(function (data) {
 
         return Promise.all(data.body.items.reduce(function (trackPromisesList, trackObject) {
