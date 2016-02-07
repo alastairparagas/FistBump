@@ -57,21 +57,26 @@ function spotifyAnalysis() {
             return spotifyApi.authorizationCodeGrant(accessCode);
         }, function (error) {
             console.log("Could not get access code from prompt. " + error);
-        })
-
-        // Obtain current user's Spotify Playlist
-        .then(function (data) {
-            spotifyApi.setAccessToken(data.body.access_token);
-            spotifyApi.setRefreshToken(data.body.refresh_token);
-        }, function (error) {
-            console.log("Could not get access tokens from access code. " + error);
+        });
+    } else {
+        accessTokenPromise = Promise.resolve({
+            body: {
+                access_token: spotifyApi.getAccessToken(),
+                refresh_token: spotifyApi.getRefreshToken()
+            }
         });
     }
     
-    // Do Echonest Music Analysis on Spotify Playlist
-    return accessTokenPromise.then(function () {
+    // Obtain current user's Spotify Playlist
+    return accessTokenPromise.then(function (data) {
+        spotifyApi.setAccessToken(data.body.access_token);
+        spotifyApi.setRefreshToken(data.body.refresh_token);
+            
         return spotifyApi.getMySavedTracks();
+    }, function (error) {
+        console.log("Could not get access tokens from access code. " + error);
     })
+    // Do Echonest Music Analysis on Spotify Playlist
     .then(function (data) {
 
         return Promise.all(data.body.items.reduce(function (trackPromisesList, trackObject) {
