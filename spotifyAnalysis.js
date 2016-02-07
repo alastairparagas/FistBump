@@ -24,7 +24,7 @@ function spotifyAnalysis() {
     // A promise that must end up providing an access code
     var accessTokenPromise;
 
-    if (!config.code && !spotifyApi.getAccessToken()) {
+    if (!config.code || !spotifyApi.getAccessToken()) {
         // No access code stored in config? Prompt the user!
         accessTokenPromise = new Promise(function (resolve, reject) {
             var authorizationUrl = spotifyApi.createAuthorizeURL([
