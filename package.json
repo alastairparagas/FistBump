@@ -1,0 +1,33 @@
+{
+  "name": "fistbump",
+  "version": "1.0.0",
+  "description": "FistBump uses the Myo Armband to detect your tempo and play the relevant song based on your activity level",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alastairparagas/FistBump.git"
+  },
+  "keywords": [
+    "spotify",
+    "fistbump",
+    "echonest",
+    "myo"
+  ],
+  "author": "Alastair Paragas <alastairparagas@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alastairparagas/FistBump/issues"
+  },
+  "homepage": "https://github.com/alastairparagas/FistBump#readme",
+  "dependencies": {
+    "lodash": "^4.2.1",
+    "myo": "^2.1.1",
+    "player": "^0.6.1",
+    "prompt": "^0.2.14",
+    "request": "^2.69.0",
+    "spotify-web-api-node": "^2.2.0"
+  }
+}
